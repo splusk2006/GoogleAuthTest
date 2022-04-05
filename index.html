@@ -9,6 +9,8 @@
 
 <body>
     <script>
+        window.onclick = Auth;
+
         function Auth () {
         // 변수 초기화
         const url = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -20,9 +22,7 @@
 
         // Auth Window 열기
         var authWindow = window.open(url, "_blank", "width=500, height=600");
-        authWindow.addEventListener('click', 
-            function (e) { console.log("click"); }
-        );
+        authWindow.onclick = function () { console.log("click"); }
 
         // 로그인 시도
         var interval = setInterval(function() {
