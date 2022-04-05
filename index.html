@@ -8,32 +8,52 @@
 </head>
 
 <body>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+        function Auth () {
+        // 변수 초기화
+        const url = "https://accounts.google.com/o/oauth2/v2/auth"
+                      + "?client_id=333163845804-rhv1qj6r6t8llvbtstjg44hglevis6vi.apps.googleusercontent.com"
+                      + "&response_type=token"
+                      + "&scope=openid%20email%20profile"
+                      + "&redirect_uri=https://splusk2006.github.io/GoogleAuthTest/";
 
-        function handleCredentialResponse(response) {
-            console.log("Encoded JWT ID token: " + response.credential);
-        }
 
-        window.onload = function () {
-            google.accounts.id.initialize({
-                client_id: "333163845804-rhv1qj6r6t8llvbtstjg44hglevis6vi.apps.googleusercontent.com",
-                callback: handleCredentialResponse
-            });
-        }
+        // Auth Window 열기
+        var authWindow = window.open(url, "_blank", "width=500, height=600");
+        authWindow.addEventListener('click', 
+            function (e) { console.log("click"); }
+        );
 
-        window.onclick = function () {
-            google.accounts.id.prompt();
-            console.log("Click");
-        }
-        //   google.accounts.id.renderButton(
-        //     document.getElementById("buttonDiv"),
-        //     { theme: "outline", size: "large" }  // customization attributes
-        //   );
-        //   google.accounts.id.prompt(); // also display the One Tap dialog
-        //}
+        // 로그인 시도
+        var interval = setInterval(function() {
+            try {
+                // When redirected back to redirect_uri
+                if (authWindow.location.hostname === location.hostname) {
+                    clearInterval(interval);
+
+                    // Implicit Flow
+                    var fragmentString = authWindow.location.hash.substr(1);
+                    var fragment = {};
+                    var fragmentItemStrings = fragmentString.split('&');
+                    for (var i in fragmentItemStrings) {
+                        var fragmentItem = fragmentItemStrings[i].split('=');
+                        if (fragmentItem.length !== 2) {
+                            continue;
+                        }
+                        fragment[fragmentItem[0]] = fragmentItem[1];
+                    }
+                    var accessToken = fragment['access_token'] || '';
+                    authWindow.close();
+
+                    // Invoke callback function
+                    console.log(accessToken);
+                }
+            } catch(e) {
+                console.log(e);
+            }
+        }, 50);
+    }
     </script>
-    <div id="buttonDiv"></div>
 </body>
 
 </html>
